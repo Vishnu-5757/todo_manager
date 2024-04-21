@@ -1,0 +1,188 @@
+{% extends "user/user_base.html" %}
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    integrity="sha512-yD/TXPO3FDwYhz83OXcK4YOBfQE9KoRb5Fb0RZHgSwMIM+HGqgxzj0ApVI4+J5vkmk9azb7CxG9ZwJD6gKsFFw=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+<section class="vh-100" style="background-color: #ffffff;">
+    <div class="container py-5">
+        <div class="row">
+            <!-- Left Column for Projects and Completed Projects -->
+            <div class="col-md-3">
+                <div class="card mb-5" style="border-radius: 15px;">
+                    <div class="card-body p-5">
+                        <!-- Boxed link for Projects -->
+                        <div class="project-link-box">
+                            <a href="#" id="projects-link" class="mb-3">Create Project</a>
+                        </div>
+                        <!-- Boxed link for Completed Projects -->
+                        <div class="project-link-box">
+                            <a href="#" id="completed-projects-link" class="mb-3">View Projects</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column for Create Project and Your Projects -->
+            <div class="col-md-9">
+
+                <div id="create-project-form-container" class="card mb-5" style="border-radius: 15px;">
+                    <div class="card-body p-5">
+                        <h6 class="mb-3">Create Project</h6>
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="projectName" class="form-label">Project Name</label>
+                                <input type="text" class="form-control" id="projectName" name="projectName"
+                                    placeholder="Enter project name">
+                            </div>
+                            <button type="submit" name="create_project_btn" class="btn btn-primary">Create
+                                Project</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Your Projects section -->
+                <div id="your-projects" class="card mb-5" style="border-radius: 15px; display: none;">
+                    <div class="card-body p-5">
+                        <h6 class="mb-3">Your Projects</h6>
+                        <ul class="list-group">
+                            {% for project in projects %}
+                            <li
+                                class="list-group-item border-start-0 border-top-0 border-end-0 border-bottom rounded-0 mb-2">
+                                <div class="row align-items-center">
+                                    <div class="col-md-10">
+                                        <a href="/my_project/{{project.id}}" id="project-name-{{ project.id }}" class="text-decoration-none">
+                                            {{ project.title }}
+                                        </a>
+                                        
+                                    </div>
+                                    <div class="d-flex justify-content-end align-items-center">
+                                        <span class="text-muted me-2" style="font-size: 12px;">{{ project.created_date|date:"F j, Y" }}</span>
+                                        <!-- Edit button -->
+                                        <a href="#" class="btn btn-sm btn-primary edit-project-btn me-2" data-project-id="{{ project.id }}" title="Edit project">
+                                            Edit
+                                        </a>
+                                        <!-- Delete button -->
+                                        <a href="{% url 'delete_project' project.id %} " class="btn btn-danger btn-sm me-2">Delete</a>
+                                        
+                                    </div>
+                                </div>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+
+
+
+
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    integrity="sha512-yD/TXPO3FDwYhz83OXcK4YOBfQE9KoRb5Fb0RZHgSwMIM+HGqgxzj0ApVI4+J5vkmk9azb7CxG9ZwJD6gKsFFw=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+<style>
+    .date-edit-delete {
+        display: flex;
+        align-items: center;
+    }
+
+    /* Adjusting spacing */
+    .date-edit-delete .text-muted {
+        margin-right: 10px;
+        font-size: 12px;
+    }
+    /* CSS for boxed project links */
+    .project-link-box {
+        background-color: #f0f0f0;
+        border-radius: 8px;
+        padding: 8px 12px;
+        margin-bottom: 10px;
+        cursor: pointer;
+    }
+
+    .project-link-box a {
+        color: #333333;
+        text-decoration: none;
+    }   
+
+    .project-link-box:hover {
+        background-color: #e0e0e0;
+    }
+</style>
+<script>
+    // JavaScript to handle clicking on projects and showing create project form
+    document.addEventListener('DOMContentLoaded', function () {
+        const projectsLink = document.getElementById('projects-link');
+        const completedProjectsLink = document.getElementById('completed-projects-link');
+        const createProjectFormContainer = document.getElementById('create-project-form-container');
+        const yourProjectsContainer = document.getElementById('your-projects');
+
+        // Show create project form when Projects is clicked
+        projectsLink.addEventListener('click', function (event) {
+            event.preventDefault();
+            createProjectFormContainer.style.display = 'block';
+            yourProjectsContainer.style.display = 'none'; // Hide Your Projects when Create Project is clicked
+        });
+
+        // Show Your Projects when Completed Projects is clicked
+        completedProjectsLink.addEventListener('click', function (event) {
+            event.preventDefault();
+            createProjectFormContainer.style.display = 'none';
+            yourProjectsContainer.style.display = 'block';
+        });
+    });
+    document.addEventListener('DOMContentLoaded', function() {
+    const editProjectBtns = document.querySelectorAll('.edit-project-btn');
+
+    editProjectBtns.forEach(btn => {
+        btn.addEventListener('click', function(event) {
+            event.preventDefault();
+            const projectId = btn.getAttribute('data-project-id');
+            const newProjectName = prompt('Enter the new project name:');
+            
+            if (newProjectName) {
+                // Send an AJAX request to update the project name
+                fetch(`/update_project_name/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify({ id: projectId, name: newProjectName })
+                })
+                .then(response => {
+                    if (response.ok) {
+                        // Update the project name in the DOM
+                        const projectNameElement = document.querySelector(`#project-name-${projectId}`);
+                        projectNameElement.textContent = newProjectName;
+                        // Optionally update the UI or display a success message
+                        alert('Project name updated successfully!');
+                    } else {
+                        // Handle errors or display error message
+                        alert('Error updating project name.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    // Handle errors or display error message
+                    alert('Error updating project name.');
+                });
+            }
+        });
+    });
+});
+
+
+
+
+</script>
+
+
+{% endblock %}

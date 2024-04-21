@@ -1,0 +1,23 @@
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const projectsLink = document.getElementById('projects-link');
+        const completedProjectsLink = document.getElementById('completed-projects-link');
+        const createProjectFormContainer = document.getElementById('create-project-form-container');
+        const yourProjectsContainer = document.getElementById('your-projects');
+    
+        // Show create project form when Projects is clicked
+        projectsLink.addEventListener('click', function(event) {
+            event.preventDefault();
+            createProjectFormContainer.style.display = 'block';
+            yourProjectsContainer.style.display = 'none'; // Hide Your Projects when Create Project is clicked
+        });
+    
+        // Show Your Projects when Completed Projects is clicked
+        completedProjectsLink.addEventListener('click', function(event) {
+            event.preventDefault();
+            createProjectFormContainer.style.display = 'none';
+            yourProjectsContainer.style.display = 'block';
+        });
+    });
+    </script>
+    
