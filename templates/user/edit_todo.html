@@ -1,9 +1,21 @@
+
+
 {% extends "user/user_base.html" %}
 {% block content %}
-<h2>Edit Todo</h2>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Update</button>
-</form>
+<section class="mt-4 d-flex justify-content-center align-items-center" style="background-color: #ffffff;">
+    <div class="card mt-5 mb-4" style="border-radius: 15px; width: 650px;">
+        <div class="card-body p-5">
+            <form id="edit-todo-form" method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="newTodoDescription" class="form-label">New Todo Description</label>
+                    {% for i in todoo %}
+                    <input type="text" class="form-control" value="{{ i.description|safe }}" id="newTodoDescription" name="newTodoDescription" placeholder="Enter new todo description">
+                    {% endfor %}
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </form>
+        </div>
+    </div>
+</section>
 {% endblock %}

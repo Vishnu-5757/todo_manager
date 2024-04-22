@@ -30,7 +30,7 @@
                     </div>
                     <div class="col-auto">
                         <button type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-success btn-lg">Add</button>
-                        <a href="{% url 'export_gist' project.id %} " class="btn btn-danger btn-sm me-2">Export</a>
+                        <a href="{% url 'export_gist' project.id %} " class="btn btn-danger btn-lg me-2">Export</a>
                     </div>
                 </div>
             </form>
@@ -51,7 +51,7 @@
                         
                         <!-- Edit and Delete buttons -->
                         <span class="text-muted ms-2" style="font-size: 12px;">{{ todo.created_date|date:"F j, Y" }}</span>
-                        <button class="btn btn-primary btn-sm edit-todo-btn" data-todo-id="{{ todo.id }}">Edit</button>
+                        <a href="{% url 'edit_todo' todo.id %}" class="btn btn-primary btn-sm" title="Edit todo">Edit</a>
                         <a href="{% url 'delete_todo' todo.id %}" class="btn btn-danger btn-sm" title="Delete todo">Delete</a>
                     </div>
                 </li>
@@ -111,44 +111,6 @@
             });
         });
     });
-
-//     document.addEventListener('DOMContentLoaded', function() {
-//     const editProjectBtns = document.querySelectorAll('.edit-project-btn');
-
-//     editProjectBtns.forEach(btn => {
-//         btn.addEventListener('click', function(event) {
-//             event.preventDefault();
-//             const projectId = btn.getAttribute('data-project-id');
-//             const newProjectName = prompt('Enter the new project name:');
-            
-//             if (newProjectName) {
-//                 // Send an AJAX request to update the project name
-//                 fetch(`/edit_project/${projectId}/`, {
-//                     method: 'POST',
-//                     headers: {
-//                         'Content-Type': 'application/json',
-//                         'X-CSRFToken': '{{ csrf_token }}'
-//                     },
-//                     body: JSON.stringify({ projectName: newProjectName })
-//                 })
-//                 .then(response => {
-//                     if (response.ok) {
-//                         // Optionally update the UI or display a success message
-//                         alert('Project name updated successfully!');
-//                     } else {
-//                         // Handle errors or display error message
-//                         alert('Error updating project name.');
-//                     }
-//                 })
-//                 .catch(error => {
-//                     console.error('Error:', error);
-//                     // Handle errors or display error message
-//                     alert('Error updating project name.');
-//                 });
-//             }
-//         });
-//     });
-// });
 
 </script>
 

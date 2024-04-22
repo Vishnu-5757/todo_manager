@@ -14,7 +14,7 @@ from django.db.models import Count
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from .utilities.gist import export_project_summary_as_gist
-
+from django.urls import reverse
 from .forms import CreateUserForms
 from django.contrib import messages
 from django.contrib.auth import authenticate ,login,logout
@@ -26,6 +26,7 @@ import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
+from datetime import datetime
 
 
 
@@ -89,24 +90,34 @@ def home(request):
         return render(request, 'user/user_home.html', {'username': username,'projects': projects})
             
     else:
+
         return redirect('login')
     
 @csrf_exempt
-def update_project_name(request):
+def edit_project(request, project_id):
+    project=Project.objects.filter(pk=project_id)
+    context={
+        'project':project
+    }
     if request.method == 'POST':
-        data = json.loads(request.body.decode('utf-8'))  # Parse request body JSON data
-        project_id = data.get('id')
-        new_name = data.get('name')
-
+        # Handle form submission here
+        new_name = request.POST.get('newProjectName')
         try:
             project = Project.objects.get(pk=project_id)
             project.title = new_name
+            project.created_date = datetime.now()  
             project.save()
-            return JsonResponse({'success': True})
+            # Redirect to the view projects page upon successful editing
+            return redirect(reverse('home'))
         except Project.DoesNotExist:
             return JsonResponse({'success': False, 'error': 'Project not found'})
     else:
-        return JsonResponse({'success': False, 'error': 'Invalid request method'})
+        return render(request, 'user/edit_project.html',context)
+    
+
+    
+
+    
 
 
     
@@ -150,21 +161,26 @@ def delete_project(request, project_id):
     
     return redirect('home')
 
-
 def edit_todo(request, todo_id):
     todo = get_object_or_404(Todo, pk=todo_id)
+    todos = Todo.objects.filter(pk=todo_id)
+    context={
+        'todoo':todos
+    }
     if request.method == 'POST':
-        new_description = request.POST.get('description')
+        new_description = request.POST.get('newTodoDescription')
         if new_description:
             # Update description and updated_date
             todo.description = new_description
             todo.created_date = timezone.now()
             todo.save()
-            return JsonResponse({'message': 'Todo updated successfully'})
+            project_id = todo.project.id
+            # Redirect to the view projects page upon successful editing
+            return redirect('my_project', project_id=project_id)
         else:
             return JsonResponse({'error': 'Description is required'}, status=400)
     else:
-        return JsonResponse({'error': 'Method not allowed'}, status=405)
+        return render(request, 'user/edit_todo.html',context)
 
 
 @login_required
@@ -195,12 +211,18 @@ def update_todo_status(request, todo_id):
         todo.save()
     return redirect('my_project', project_id=project_id)
 
+
+
 @login_required
 def export_as_gist(request, project_id):
     user = request.user
     project = get_object_or_404(Project, pk=project_id, uid=user)
     todos = project.todos.all()
-    export_project_summary_as_gist(project.title,todos)
+    export_result = export_project_summary_as_gist(project.title,todos)
+    if export_result.startswith('Gist created successfully'):
+        messages.success(request, export_result)
+    else:
+        messages.error(request, export_result)
 
     print(todos)
     return redirect('my_project', project_id=project_id)

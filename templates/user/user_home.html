@@ -60,7 +60,7 @@
                                     <div class="d-flex justify-content-end align-items-center">
                                         <span class="text-muted me-2" style="font-size: 12px;">{{ project.created_date|date:"F j, Y" }}</span>
                                         <!-- Edit button -->
-                                        <a href="#" class="btn btn-sm btn-primary edit-project-btn me-2" data-project-id="{{ project.id }}" title="Edit project">
+                                        <a href="{% url 'edit_project' project.id %}" class="btn btn-sm btn-primary edit-project-btn me-2" title="Edit project">
                                             Edit
                                         </a>
                                         <!-- Delete button -->
@@ -138,46 +138,6 @@
             yourProjectsContainer.style.display = 'block';
         });
     });
-    document.addEventListener('DOMContentLoaded', function() {
-    const editProjectBtns = document.querySelectorAll('.edit-project-btn');
-
-    editProjectBtns.forEach(btn => {
-        btn.addEventListener('click', function(event) {
-            event.preventDefault();
-            const projectId = btn.getAttribute('data-project-id');
-            const newProjectName = prompt('Enter the new project name:');
-            
-            if (newProjectName) {
-                // Send an AJAX request to update the project name
-                fetch(`/update_project_name/`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': '{{ csrf_token }}'
-                    },
-                    body: JSON.stringify({ id: projectId, name: newProjectName })
-                })
-                .then(response => {
-                    if (response.ok) {
-                        // Update the project name in the DOM
-                        const projectNameElement = document.querySelector(`#project-name-${projectId}`);
-                        projectNameElement.textContent = newProjectName;
-                        // Optionally update the UI or display a success message
-                        alert('Project name updated successfully!');
-                    } else {
-                        // Handle errors or display error message
-                        alert('Error updating project name.');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    // Handle errors or display error message
-                    alert('Error updating project name.');
-                });
-            }
-        });
-    });
-});
 
 
 
