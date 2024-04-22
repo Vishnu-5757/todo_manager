@@ -27,21 +27,29 @@ from django.views.decorators.http import require_POST
 from datetime import datetime
 
 
+
 def register(request):
-   if request.user.is_authenticated:
-      return redirect('home')
-   else:
-    form=CreateUserForms
-    context={
-        'form':form
-    }
-    if request.method == "POST":
-        form=CreateUserForms(request.POST)
-        if form.is_valid():
-            form.save()
-            url = reverse('Auth:login') 
-            return redirect(url)
-    return render(request,'auth/user_register.html',context)
+    if request.user.is_authenticated:
+        return redirect('home')
+    else:
+        form = CreateUserForms()
+        if request.method == "POST":
+            form = CreateUserForms(request.POST)
+            if form.is_valid():
+                form.save()
+                url = reverse('Auth:login') 
+                return redirect(url)
+        else:
+          
+            for field, errors in form.errors.items():
+                for error in errors:
+                   
+                    if field == 'password2' and 'password1' in errors:
+                        continue
+                    messages.error(request, f"{field}: {error}")
+        context = {'form': form}
+        return render(request, 'auth/user_register.html', context)
+
 
 
 

@@ -10,29 +10,38 @@
     <form action="" method="post">
         {% csrf_token %}
         <div class="input_field">
-            <!-- {{ form.username.label_tag }} -->
-           <input type="text" name="{{  form.username.name }}" placeholder="Username" class="input">
+            <input type="text" name="{{  form.username.name }}" placeholder="Username" class="input">
             <i class="fas fa-user"></i>
+            {% for error in form.username.errors %}
+            <span class="error">{{ error }}</span>
+            {% endfor %}
         </div>
         <div class="input_field">
-          
             <input type="email" name="{{ form.email.name }}" placeholder="Email" class="input">
             <i class="far fa-envelope"></i>
+            {% for error in form.email.errors %}
+            <span class="error">{{ error }}</span>
+            {% endfor %}
         </div>
         <div class="input_field">
-            <!-- {{ form.password1.label_tag }} -->
             <input type="password" name="{{ form.password1.name }}" placeholder="Password" class="input">
             <i class="fas fa-lock"></i>
+            {% for error in form.password1.errors %}
+            <span class="error">{{ error }}</span>
+            {% endfor %}
         </div>
         <div class="input_field">
-            <!-- {{ form.password2.label_tag }} -->
             <input type="password" name="{{ form.password2.name }}" placeholder="Confirm Password" class="input">
             <i class="fas fa-lock"></i>
+            {% for error in form.password2.errors %}
+            <span class="error">{{ error }}</span>
+            {% endfor %}
         </div>
+        
         <div class="btn">
             <button type="submit">Register</button>
         </div>
-        {{form.errors}}
+        {% comment %} {{form.errors}} {% endcomment %}
         <div class="login-link">
             <p>Already have an account? <a href="/">Login</a></p>
             
@@ -42,6 +51,12 @@
 
 </div>
 <style>
+
+    .error {
+            font-size: 12px; 
+            color: red;
+        }
+  
     @import url('https://fonts.googleapis.com/css?family=Josefin+Sans');
 
     * {
