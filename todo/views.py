@@ -30,45 +30,45 @@ from datetime import datetime
 
 
 
-def register(request):
-   if request.user.is_authenticated:
-      return redirect('home')
-   else:
-    form=CreateUserForms
-    context={
-        'form':form
-    }
-    if request.method == "POST":
-        form=CreateUserForms(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('login')
-    return render(request,'user/user_register.html',context)
+# def register(request):
+#    if request.user.is_authenticated:
+#       return redirect('home')
+#    else:
+#     form=CreateUserForms
+#     context={
+#         'form':form
+#     }
+#     if request.method == "POST":
+#         form=CreateUserForms(request.POST)
+#         if form.is_valid():
+#             form.save()
+#             return redirect('login')
+#     return render(request,'user/user_register.html',context)
 
 
 
-def loginPage(request):
-    if request.user.is_authenticated:
-      return redirect('home')
-    else:  
+# def loginPage(request):
+#     if request.user.is_authenticated:
+#       return redirect('home')
+#     else:  
 
-     if request.method == "POST":
-      username =  request.POST.get('username')
-      password =  request.POST.get('password')
+#      if request.method == "POST":
+#       username =  request.POST.get('username')
+#       password =  request.POST.get('password')
 
-      user=authenticate(request,   username=username,    password=password)
+#       user=authenticate(request,   username=username,    password=password)
 
-      if user is not None:
-         request.session['username'] = username
-         login(request,user)
+#       if user is not None:
+#          request.session['username'] = username
+#          login(request,user)
 
-         return redirect('home')
-      else:
-         messages.info(request,'Username Or Password Is Incorrect')
+#          return redirect('home')
+#       else:
+#          messages.info(request,'Username Or Password Is Incorrect')
          
 
      
-    return render(request,'user/user_login.html')
+#     return render(request,'user/user_login.html')
 
 
 
@@ -108,7 +108,8 @@ def edit_project(request, project_id):
             project.created_date = datetime.now()  
             project.save()
             # Redirect to the view projects page upon successful editing
-            return redirect(reverse('home'))
+            url=reverse('todo:home')
+            return redirect(url)
         except Project.DoesNotExist:
             return JsonResponse({'success': False, 'error': 'Project not found'})
     else:
@@ -141,12 +142,15 @@ def my_project(request, project_id):  # Add project_id parameter here
         if description:
             todo = Todo.objects.create(description=description, project=project, uid=user)
             messages.success(request, 'Todo created successfully.')
-            return redirect('my_project', project_id=project_id)  
+            url = reverse('todo:my_project', args=[project_id]) 
+            return redirect(url)
+            # return redirect('my_project', project_id=project_id)  
         else:
            
             pass
 
     return render(request, 'user/my_project.html', context)
+
 
 def delete_project(request, project_id):
     project = get_object_or_404(Project, pk=project_id)
@@ -157,7 +161,7 @@ def delete_project(request, project_id):
     # Delete the project
     project.delete()
     return HttpResponse('<script>alert("Deleted");window.location.href="/home"</script>')
-
+    
     
     return redirect('home')
 
@@ -175,8 +179,9 @@ def edit_todo(request, todo_id):
             todo.created_date = timezone.now()
             todo.save()
             project_id = todo.project.id
-            # Redirect to the view projects page upon successful editing
-            return redirect('my_project', project_id=project_id)
+            url = reverse('todo:my_project', args=[project_id]) 
+            return redirect(url)
+            # return redirect('my_project', project_id=project_id)
         else:
             return JsonResponse({'error': 'Description is required'}, status=400)
     else:
@@ -192,8 +197,10 @@ def delete_todo(request, todo_id):
     
     delete_message = f' "{todo.description}" deleted successfully.'
     messages.info(request, delete_message)
+    url = reverse('todo:my_project', args=[project_id]) 
+    return redirect(url)
     
-    return redirect('my_project', project_id=project_id)
+    # return redirect('my_project', project_id=project_id)
 
 
 
@@ -209,7 +216,9 @@ def update_todo_status(request, todo_id):
         else:
             todo.status = 'pending'
         todo.save()
-    return redirect('my_project', project_id=project_id)
+    url = reverse('todo:my_project', args=[project_id]) 
+    return redirect(url)
+    # return redirect('my_project', project_id=project_id)
 
 
 
@@ -225,11 +234,16 @@ def export_as_gist(request, project_id):
         messages.error(request, export_result)
 
     print(todos)
-    return redirect('my_project', project_id=project_id)
+    url = reverse('todo:my_project', args=[project_id]) 
+    return redirect(url)
+    # return redirect('my_project', project_id=project_id)
 
 
 
 def LogoutPage(request):
    logout(request)
-   return redirect('login')
+   url = reverse('Auth:login')  
+    
+    
+   return redirect(url)
 
