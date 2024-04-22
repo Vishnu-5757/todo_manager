@@ -24,8 +24,8 @@
             <button type="submit">Login</button>
         </div>
 
-        {% for i in messages %}
-        <p class="message">{{i}}</p>
+        {% for message in messages %}
+        <p id="message" class="message">{{ message }}</p>
         {% endfor %}
 
 
