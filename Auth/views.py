@@ -55,7 +55,7 @@ def register(request):
 
 def loginPage(request):
     if request.user.is_authenticated:
-      return redirect('home')
+      return redirect('todo:home')
     else:  
 
      if request.method == "POST":
